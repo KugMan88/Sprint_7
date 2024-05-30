@@ -4,8 +4,9 @@ import string
 import json
 from data.test_data import TestOrder
 from data.urls import TestAPIBaseLinks, TestAPICourierLinks, TestAPIOrdersLinks
+import allure
 
-
+@allure.step("Зарегистрировать нового курьера и вернуть логин, пароль")
 def register_new_courier_and_return_login_password():
     def generate_random_string(length):
         letters = string.ascii_lowercase
@@ -32,7 +33,7 @@ def register_new_courier_and_return_login_password():
 
     return response, login_pass
 
-
+@allure.step("Получить несуществующий ID курьера")
 def non_existing_id_courier():
     courier = register_new_courier_and_return_login_password()
     sign_in = {
@@ -44,7 +45,7 @@ def non_existing_id_courier():
     courier_id = courier_signin.json()["id"] + random.randint(1000, 9000)
     return courier_id
 
-
+@allure.step("Вернуть новый заказ")
 def return_new_order():
     payload = json.dumps(TestOrder.test_order)
     response = requests.post(TestAPIBaseLinks.MAIN_URL + TestAPIOrdersLinks.MAIN_ORDERS_URL, data=payload)

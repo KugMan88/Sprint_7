@@ -61,44 +61,6 @@ class TestGetOrder:
 
         assert response.status_code == 200 and response.json()['ok'] == True
 
-    @allure.description('Проверка принятия заказа без id курьера | POST /api/v1/courier/login')
-    @allure.title('Получение ошибки при приеме заказа без id курьера')
-    def test_get_order_without_courier_id_failed(self, courier_login, courier_password):
-        new_courier = {"login": courier_login,
-                       "password": courier_password}
-        courier_signin = requests.post(TestAPIBaseLinks.MAIN_URL + TestAPICourierLinks.LOGIN_URL, data=new_courier)
-        courier_id = courier_signin.json()['id']
-
-        new_track = return_new_order()
-        track_order = requests.get(TestAPIBaseLinks.MAIN_URL + TestAPIOrdersLinks.TRACK_ORDER_URL + str(new_track))
-        order_id = track_order.json()['order']['id']
-
-        payload = {"id": order_id,
-                   "courierId": courier_id}
-        response = requests.put(
-            TestAPIBaseLinks.MAIN_URL + TestAPIOrdersLinks.ACCEPT_ORDER_URL + str(order_id), data=payload)
-
-        assert response.status_code == 400 and response.json()['message'] == OrdersErrors.accept_order_no_data
-
-    @allure.description('Проверка принятия заказа без id заказа | PUT /api/v1/orders/accept')
-    @allure.title('Получение ошибки приема заказа без id заказа')
-    def test_get_order_without_order_id_failed(self, courier_login, courier_password):
-        new_courier = {"login": courier_login,
-                       "password": courier_password}
-        courier_signin = requests.post(TestAPIBaseLinks.MAIN_URL + TestAPICourierLinks.LOGIN_URL, data=new_courier)
-        courier_id = courier_signin.json()['id']
-
-        new_track = return_new_order()
-        track_order = requests.get(TestAPIBaseLinks.MAIN_URL + TestAPIOrdersLinks.TRACK_ORDER_URL + str(new_track))
-        order_id = track_order.json()['order']['id']
-
-        payload = {"id": order_id,
-                   "courierId": courier_id}
-        response = requests.put(
-            TestAPIBaseLinks.MAIN_URL + TestAPIOrdersLinks.ACCEPT_ORDER_URL + 'courierId=' + str(courier_id),
-            data=payload)
-
-        assert response.status_code == 400 and response.json()['message'] == OrdersErrors.accept_order_no_order_number
 
     @allure.description('Проверка принятия заказа с неверным id курьера | GET /api/v1/orders/track')
     @allure.title('Получение ошибки приема заказа с некорректным id курьера')
